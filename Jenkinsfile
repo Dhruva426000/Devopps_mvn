@@ -1,54 +1,47 @@
 pipeline {
-    agent any
+    agent any  // Use any available agent
 
     tools {
-        maven 'maven'
+        maven 'Maven'  // Ensure this matches the name configured in Jenkins
     }
-
     stages {
-
         stage('Checkout') {
             steps {
-                checkout scm
+                git branch: 'master', url: 'https://github.com/Dhruva426000/Devopps_mvn.git'
             }
         }
 
         stage('Build') {
             steps {
-                sh './gradlew clean build'
+                sh 'mvn clean package'  // Run Maven build
             }
         }
 
         stage('Test') {
             steps {
-                sh './gradlew test'
+                sh 'mvn test'  // Run unit tests
             }
         }
 
-        stage('Archive Artifact') {
+        
+        
+       
+        stage('Run Application') {
             steps {
-                archiveArtifacts artifacts: 'build/libs/*.jar'
+                // Start the JAR application
+                sh 'java -jar target/MyMavenJenkinsPipeline-1.0-SNAPSHOT.jar'
             }
         }
 
-        stage('Run App') {
-            steps {
-                sh '''
-                nohup java -jar build/libs/*.jar > app.log 2>&1 &
-                '''
-            }
+        
+    }
+
+    post {
+        success {
+            echo 'Build and deployment successful!'
+        }
+        failure {
+            echo 'Build failed!'
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-        
-        
